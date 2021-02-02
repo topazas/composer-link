@@ -11,10 +11,10 @@ use henzeb\ComposerLink\Manager\LinkManager;
 
 class LinkCommandProvider implements CommandProvider
 {
-
-
-    private LinkManager $linkManager;
-
+    /**
+     * @var LinkManager
+     */
+    private $linkManager;
 
     public function __construct($linkManager)
     {
@@ -24,11 +24,11 @@ class LinkCommandProvider implements CommandProvider
     /**
      * @return array|BaseCommand[]
      */
-    public function getCommands()
+    public function getCommands(): array
     {
         return [
             new LinkCommand($this->linkManager),
-            new UnlinkCommand($this->linkManager)
+            new UnlinkCommand($this->linkManager),
         ];
     }
 }

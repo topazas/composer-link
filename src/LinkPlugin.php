@@ -10,7 +10,6 @@ use Composer\Plugin\Capability\CommandProvider;
 use Composer\Plugin\Capable;
 use Composer\Plugin\PluginInterface;
 use Composer\Script\ScriptEvents;
-use Exception;
 use henzeb\ComposerLink\Filesystem\Filesystem;
 use henzeb\ComposerLink\Manager\ComposerManager;
 use henzeb\ComposerLink\Manager\ConfigManager;
@@ -18,15 +17,35 @@ use henzeb\ComposerLink\Manager\LinkManager;
 
 class LinkPlugin implements PluginInterface, Capable, EventSubscriberInterface
 {
-
     /**
      * @var LinkManager
      */
-    private static LinkManager $linkManager;
+    private static $linkManager;
+
+    public static function getSubscribedEvents(): array
+    {
+        if (static::isNoTemporaryClass()) {
+            return [];
+        }
+
+        return [
+            ScriptEvents::PRE_AUTOLOAD_DUMP => ['preAutoloadDump'],
+        ];
+    }
+
+    /**
+     * Composer 1 seems to load this plugin class three times. dunno why, but this ugly workaround should prevent it.
+     *
+     * @return bool
+     */
+    public static function isNoTemporaryClass(): bool
+    {
+        return __CLASS__ !== 'henzeb\\ComposerLink\\LinkPlugin';
+    }
 
     public function activate(Composer $composer, IOInterface $io)
     {
-        if(static::isNoTemporaryClass()) {
+        if (static::isNoTemporaryClass()) {
             return;
         }
         $filesystem = new Filesystem();
@@ -39,50 +58,34 @@ class LinkPlugin implements PluginInterface, Capable, EventSubscriberInterface
         );
     }
 
-    public function getLinkManager() {
+    public function getLinkManager(): LinkManager
+    {
         return self::$linkManager;
     }
 
-    public function getCapabilities()
+    public function getCapabilities(): array
     {
-        if(static::isNoTemporaryClass()) {
+        if (static::isNoTemporaryClass()) {
             return [];
         }
+
         return [
             CommandProvider::class => LinkCommandProvider::class,
         ];
     }
 
-    public static function getSubscribedEvents()
-    {
-        if(static::isNoTemporaryClass()) {
-            return [];
-        }
-        
-        return [
-            ScriptEvents::PRE_AUTOLOAD_DUMP => ['preAutoloadDump']
-        ];
-    }
-
-    public function preAutoloadDump()
+    public function preAutoloadDump(): void
     {
         self::$linkManager->linkAllFromConfig();
     }
 
-    /**
-     * Composer 1 seems to load this plugin class three times. dunno why, but this ugly workaround should prevent it.
-     * @return bool
-     */
-    public static function isNoTemporaryClass(): bool
+    public function deactivate(Composer $composer, IOInterface $io)
     {
-        return get_class() !== 'henzeb\\ComposerLink\\LinkPlugin';
-    }
-
-    public function deactivate(Composer $composer, IOInterface $io) {
 
     }
 
-    public function uninstall(Composer $composer, IOInterface $io) {
+    public function uninstall(Composer $composer, IOInterface $io)
+    {
 
     }
 

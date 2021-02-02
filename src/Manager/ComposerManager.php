@@ -5,7 +5,6 @@ namespace henzeb\ComposerLink\Manager;
 
 
 use Composer\Composer;
-use Composer\Config;
 use Composer\Factory;
 use Composer\IO\IOInterface;
 use Composer\Package\Link;
@@ -34,32 +33,25 @@ class ComposerManager
         return $this->composer->getPackage()->getName();
     }
 
-    public function getExtra(string $key, string $default = ''): string {
+    public function getExtra(string $key, string $default = ''): string
+    {
         $extra = $this->composer->getPackage()->getExtra();
 
-        return $extra[$key]??$default;
+        return $extra[$key] ?? $default;
     }
 
     public function isPackageInstalled(string $name): bool
     {
         $package = $this->getPackage($name);
-        return $package ? Filesystem::isLocalPath(
-            $this->getVendorDir() . $package->getTarget()
-        ) : false;
-    }
 
-    /**
-     * @return array
-     */
-    private function getAllRequires(): array
-    {
-        return $this->composer->getPackage()->getRequires()
-            + $this->composer->getPackage()->getDevRequires();
+        return $package ? Filesystem::isLocalPath(
+            $this->getVendorDir().$package->getTarget()
+        ) : false;
     }
 
     public function getVendorDir(): string
     {
-        return $this->composer->getConfig()->get('vendor-dir') . DIRECTORY_SEPARATOR;
+        return $this->composer->getConfig()->get('vendor-dir').DIRECTORY_SEPARATOR;
     }
 
     public function getPackage(string $name): ?Link
@@ -73,15 +65,24 @@ class ComposerManager
     {
         return new ComposerManager(
             (new Factory)->createComposer(
-            $this->io,
-            $path . DIRECTORY_SEPARATOR . 'composer.json'
-        ), $this->io);
+                $this->io,
+                $path.DIRECTORY_SEPARATOR.'composer.json'
+            ), $this->io);
 
     }
 
     public function getIO(): IOInterface
     {
         return $this->io;
+    }
+
+    /**
+     * @return array
+     */
+    private function getAllRequires(): array
+    {
+        return $this->composer->getPackage()->getRequires()
+            + $this->composer->getPackage()->getDevRequires();
     }
 
 

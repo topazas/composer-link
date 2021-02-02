@@ -9,6 +9,14 @@ use Symfony\Component\Console\Input\InputOption;
 
 class UnlinkCommand extends LinkBaseCommand
 {
+    public function getCommandStrategies(): array
+    {
+        return [
+            new UnlinkFromConfigStrategy(),
+            new UnlinkStrategy(),
+        ];
+    }
+
     protected function configure()
     {
         $this->setName('unlink');
@@ -18,14 +26,5 @@ class UnlinkCommand extends LinkBaseCommand
             new InputArgument('package', InputArgument::OPTIONAL, 'The package name you want to unlink'),
             new InputOption('remove', 'r', InputOption::VALUE_NONE, 'Remove from config'),
         ]);
-    }
-
-
-    public function getCommandStrategies(): array
-    {
-        return [
-            new UnlinkFromConfigStrategy(),
-            new UnlinkStrategy()
-        ];
     }
 }

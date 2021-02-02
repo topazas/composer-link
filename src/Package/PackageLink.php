@@ -4,8 +4,15 @@ namespace henzeb\ComposerLink\Package;
 
 class PackageLink
 {
-    private string $name;
-    private string $path;
+    /**
+     * @var string
+     */
+    private $name;
+
+    /**
+     * @var string
+     */
+    private $path;
 
     public function __construct(string $name, string $path)
     {

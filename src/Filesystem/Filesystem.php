@@ -1,18 +1,20 @@
 <?php
+
 namespace henzeb\ComposerLink\Filesystem;
 
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem as SymfonyFilesystem;
+use const DIRECTORY_SEPARATOR;
 
 class Filesystem extends SymfonyFilesystem
 {
     public function makePathRelative($endPath, $startPath): string
     {
-        if(!$this->isAbsolutePath($endPath)) {
+        if (!$this->isAbsolutePath($endPath)) {
             $endPath = $this->readlink($endPath, true);
         }
 
-        if(!$this->isAbsolutePath($startPath)) {
+        if (!$this->isAbsolutePath($startPath)) {
             $startPath = $this->readlink($startPath, true);
         }
 
@@ -53,14 +55,14 @@ class Filesystem extends SymfonyFilesystem
                 return null;
             }
 
-            if ('\\' === \DIRECTORY_SEPARATOR) {
+            if ('\\' === DIRECTORY_SEPARATOR) {
                 $path = readlink($path);
             }
 
             return realpath($path);
         }
 
-        if ('\\' === \DIRECTORY_SEPARATOR) {
+        if ('\\' === DIRECTORY_SEPARATOR) {
             return realpath($path);
         }
 

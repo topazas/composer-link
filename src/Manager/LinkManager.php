@@ -10,12 +10,25 @@ use henzeb\ComposerLink\Package\PackageLink;
 
 class LinkManager
 {
-    private static ?self $instance = null;
-    private Filesystem $filesystem;
+    /**
+     * @var null|LinkManager
+     */
+    private static $instance;
 
-    private ComposerManager $composerManager;
+    /**
+     * @var Filesystem
+     */
+    private $filesystem;
 
-    private ConfigManager $configManager;
+    /**
+     * @var ComposerManager
+     */
+    private $composerManager;
+
+    /**
+     * @var ConfigManager
+     */
+    private $configManager;
 
     public function __construct(
         Filesystem $filesystem,
@@ -41,6 +54,7 @@ class LinkManager
     /**
      * @param string $packageName
      * @param string $path
+     *
      * @return PackageLink
      * @throws Exception
      */
@@ -54,11 +68,11 @@ class LinkManager
 
             $this->removeExistingOldDir($targetDir);
 
-            $this->filesystem()->rename($targetDir, $targetDir . '.old');
+            $this->filesystem()->rename($targetDir, $targetDir.'.old');
         }
 
         $this->filesystem()->symlink(
-            $this->filesystem->makePathRelative($path, $targetDir . '/../'),
+            $this->filesystem->makePathRelative($path, $targetDir.'/../'),
             $targetDir
         );
 
@@ -67,17 +81,20 @@ class LinkManager
 
     /**
      * @param string $path
+     *
      * @return PackageLink
      * @throws Exception
      */
     public function linkFromPath(string $path): PackageLink
     {
         $package = $this->getComposerManager()->getComposerManagerFrom($path);
+
         return $this->link($package->getName(), $path);
     }
 
     /**
      * @param string $packageName
+     *
      * @throws Exception
      */
     public function linkPackageFromConfig(string $packageName)
@@ -87,18 +104,19 @@ class LinkManager
 
         $packageLinks = $this->getConfigManager()->getPackageLinks();
         if (!isset($packageLinks[$packageName])) {
-            throw new Exception('Package ' . $packageName . ' is not configured as a linkable package.', 5);
+            throw new Exception('Package '.$packageName.' is not configured as a linkable package.', 5);
         }
         $this->linkPackageObject($packageLinks[$packageName]);
 
         $this->getComposerManager()
             ->getIO()
-            ->write('linked package: <info>' . $packageLinks[$packageName]->getName() . '</info>');
+            ->write('linked package: <info>'.$packageLinks[$packageName]->getName().'</info>');
 
     }
 
     /**
      * @param PackageLink $packageLink
+     *
      * @return PackageLink
      * @throws Exception
      */
@@ -131,10 +149,10 @@ class LinkManager
                 $this->linkPackageObject($packageLink);
                 $this->getComposerManager()
                     ->getIO()
-                    ->write('linked package: <info>' . $packageLink->getName() . '</info>');
+                    ->write('linked package: <info>'.$packageLink->getName().'</info>');
             }
         } catch (Exception $e) {
-            $io->writeError('<error>' . $e->getMessage() . '</error>');
+            $io->writeError('<error>'.$e->getMessage().'</error>');
         }
     }
 
@@ -146,8 +164,8 @@ class LinkManager
             $this->filesystem()->remove($targetDir);
         }
 
-        if ($this->filesystem()->exists($targetDir . '.old')) {
-            $this->filesystem()->rename($targetDir . '.old', $targetDir);
+        if ($this->filesystem()->exists($targetDir.'.old')) {
+            $this->filesystem()->rename($targetDir.'.old', $targetDir);
         }
     }
 
@@ -169,10 +187,10 @@ class LinkManager
                 $this->unlink($packageLink->getName());
                 $this->getComposerManager()
                     ->getIO()
-                    ->write('unlinked package: <info>' . $packageLink->getName() . '</info>');
+                    ->write('unlinked package: <info>'.$packageLink->getName().'</info>');
             }
         } catch (Exception $e) {
-            $io->writeError('<error>' . $e->getMessage() . '</error>');
+            $io->writeError('<error>'.$e->getMessage().'</error>');
         }
     }
 
@@ -193,7 +211,7 @@ class LinkManager
     {
         return $this->getComposerManager()
                 ->getVendorDir()
-            . $this->getComposerManager()
+            .$this->getComposerManager()
                 ->getPackage($packageName)
                 ->getTarget();
     }
@@ -201,22 +219,23 @@ class LinkManager
     /**
      * @param string $packageName
      * @param string $path
+     *
      * @throws Exception
      */
     private function validate(string $packageName, string $path)
     {
         if (!$this->getComposerManager()->isPackageInstalled($packageName)) {
-            throw new Exception('Package ' . $packageName . ' is not installed. Please require this package first.', 1);
+            throw new Exception('Package '.$packageName.' is not installed. Please require this package first.', 1);
         }
 
-        if (!$this->filesystem()->exists($path . DIRECTORY_SEPARATOR . 'composer.json')) {
-            throw new Exception('Path ' . $path . ' does not exist or not lead to a package', 2);
+        if (!$this->filesystem()->exists($path.DIRECTORY_SEPARATOR.'composer.json')) {
+            throw new Exception('Path '.$path.' does not exist or not lead to a package', 2);
         }
 
         $packageConfig = $this->composerManager->getComposerManagerFrom($path);
 
         if ($packageConfig->getName() !== $packageName) {
-            throw new Exception('Path ' . $path . ' does not contain a package with the name ' . $packageName, 3);
+            throw new Exception('Path '.$path.' does not contain a package with the name '.$packageName, 3);
         }
     }
 
@@ -225,8 +244,8 @@ class LinkManager
      */
     private function removeExistingOldDir(string $targetDir): void
     {
-        if ($this->filesystem()->exists($targetDir . '.old')) {
-            $this->filesystem()->remove($targetDir . '.old');
+        if ($this->filesystem()->exists($targetDir.'.old')) {
+            $this->filesystem()->remove($targetDir.'.old');
         }
     }
 

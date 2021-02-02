@@ -5,7 +5,6 @@ namespace henzeb\ComposerLink\Command\Strategy;
 
 
 use Exception;
-use henzeb\ComposerLink\Filesystem\Filesystem;
 use henzeb\ComposerLink\Manager\LinkManager;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -27,6 +26,7 @@ class UnlinkFromConfigStrategy extends CommandStrategy
         try {
             if ($packageName) {
                 $linkManager->unlink($packageName);
+
                 return 0;
             }
 
@@ -34,8 +34,9 @@ class UnlinkFromConfigStrategy extends CommandStrategy
 
         } catch (Exception $e) {
 
-            $output->writeln('<error>' . $e->getMessage() . '</error>');
-            return (int)$e->getCode();
+            $output->writeln('<error>'.$e->getMessage().'</error>');
+
+            return (int) $e->getCode();
         }
     }
 }

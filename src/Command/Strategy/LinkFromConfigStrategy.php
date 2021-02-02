@@ -1,8 +1,6 @@
 <?php
 
-
 namespace henzeb\ComposerLink\Command\Strategy;
-
 
 use Exception;
 use henzeb\ComposerLink\Manager\LinkManager;
@@ -11,7 +9,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class LinkFromConfigStrategy extends CommandStrategy
 {
-
     public function satisfiedBy(InputInterface $input): bool
     {
         preg_match('/^[^\/]+\/[^\/]+$/', $input->getArgument('package') ?? '', $output_array);
@@ -26,6 +23,7 @@ class LinkFromConfigStrategy extends CommandStrategy
         try {
             if ($packageName) {
                 $linkManager->linkPackageFromConfig($packageName);
+
                 return 0;
             }
 
@@ -33,8 +31,9 @@ class LinkFromConfigStrategy extends CommandStrategy
 
         } catch (Exception $e) {
 
-            $output->writeln('<error>' . $e->getMessage() . '</error>');
-            return (int)$e->getCode();
+            $output->writeln('<error>'.$e->getMessage().'</error>');
+
+            return (int) $e->getCode();
         }
     }
 }

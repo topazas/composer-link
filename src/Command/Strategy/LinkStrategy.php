@@ -22,24 +22,27 @@ class LinkStrategy extends CommandStrategy
         $path = $input->getArgument('package');
         try {
 
-            if($path) {
+            if ($path) {
                 $packageLink = $linkManager->linkFromPath(
                     $path
                 );
 
                 $linkManager->getConfigManager()
                     ->addPackage($packageLink);
-                $output->writeln('<info> Package ' . $packageLink->getName() . ' is linked');
+                $output->writeln('<info> Package '.$packageLink->getName().' is linked');
+
                 return 0;
             }
 
             $linkManager->linkAllFromConfig();
+
             return 0;
 
         } catch (Exception $e) {
 
-            $output->writeln('<error>' . $e->getMessage() . '</error>');
-            return (int)$e->getCode();
+            $output->writeln('<error>'.$e->getMessage().'</error>');
+
+            return (int) $e->getCode();
         }
     }
 }

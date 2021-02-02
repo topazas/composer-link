@@ -22,27 +22,30 @@ class UnlinkStrategy extends CommandStrategy
         $path = $input->getArgument('package');
         try {
 
-            if($path) {
+            if ($path) {
                 $packageLink = $linkManager->unlinkFromPath(
                     $path
                 );
 
-                if($input->getOption('save')) {
+                if ($input->getOption('save')) {
                     $linkManager->getConfigManager()
                         ->removePackage($packageLink);
                 }
 
-                $output->writeln('<info> Package ' . $packageLink->getName() . ' is unlinked');
+                $output->writeln('<info> Package '.$packageLink->getName().' is unlinked');
+
                 return 0;
             }
 
             $linkManager->unlinkAllFromConfig();
+
             return 0;
 
         } catch (Exception $e) {
 
-            $output->writeln('<error>' . $e->getMessage() . '</error>');
-            return (int)$e->getCode();
+            $output->writeln('<error>'.$e->getMessage().'</error>');
+
+            return (int) $e->getCode();
         }
     }
 

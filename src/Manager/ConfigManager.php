@@ -12,9 +12,17 @@ class ConfigManager
     /**
      * @var Filesystem
      */
-    private Filesystem $filesystem;
-    private array $json;
-    private string $path;
+    private $filesystem;
+
+    /**
+     * @var array
+     */
+    private $json;
+
+    /**
+     * @var string
+     */
+    private $path;
 
     public function __construct(Filesystem $filesystem, string $path = './linked.json')
     {
@@ -48,7 +56,13 @@ class ConfigManager
             function (&$value, $key) {
                 $value = new PackageLink($key, $value);
             });
+
         return $packages;
+    }
+
+    public function __destruct()
+    {
+        $this->saveToFile();
     }
 
     private function loadConfig(): array
@@ -67,6 +81,7 @@ class ConfigManager
                 true
             );
         }
+
         return [];
     }
 
@@ -80,10 +95,5 @@ class ConfigManager
     private function getConfigPath(): string
     {
         return $this->path;
-    }
-
-    public function __destruct()
-    {
-        $this->saveToFile();
     }
 }
